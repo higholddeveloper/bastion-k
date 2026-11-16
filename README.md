@@ -1,6 +1,6 @@
 # Бастион К: сайт охранного агентства
 
-Лендинг охранного агентства «Бастион К» (Бишкек, Кара-Балта). React 18, Tailwind CSS 3, lucide-react. Сборка даёт один файл `dist/index.html` со стилями, скриптом и фото внутри.
+Лендинг охранного агентства «Бастион К» (Бишкек, Кара-Балта). React 18, Tailwind CSS 3, lucide-react. Сборка даёт один файл `index.html` в корне со стилями, скриптом и фото внутри.
 
 Версия: **variant-3-green** с фото охранников и автомобиля группы быстрого реагирования.
 
@@ -8,10 +8,10 @@
 
 ```bash
 npm install
-npm run build      # результат: dist/index.html
+npm run build      # результат: index.html в корне проекта
 ```
 
-Открыть `dist/index.html` в браузере. Шрифты (Oswald, Onest, JetBrains Mono) подгружаются с Google Fonts.
+Открыть `index.html` в браузере. Для GitHub Pages: Settings → Pages → Deploy from a branch → `main` / `(root)`. Шрифты (Oswald, Onest, JetBrains Mono) подгружаются с Google Fonts.
 
 ## Что внутри
 
