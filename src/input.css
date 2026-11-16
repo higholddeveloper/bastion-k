@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Палитры на основе логотипа: глубокий зелёный #0b4d3f и серебро. Переключаются атрибутом data-palette. */
+:root,[data-palette="a"] {
+  --bg: 7 38 31;
+  --surface: 11 53 43;
+  --surface2: 11 77 63;
+  --fg: 238 243 241;
+  --muted: 160 184 176;
+  --accent: 126 224 178;
+  --accentink: 5 38 31;
+  --alert: 255 138 120;
+  --ok: 126 224 178;
+  --paper: 236 240 238;
+  --paper2: 250 251 250;
+  --ink: 7 38 31;
+  --paperline: 205 214 210;
+  --papermuted: 74 98 90;
+  --forest: 11 77 63;
+  --linec: 255 255 255;
+  --gridc: 255 255 255;
+  --acc-bg: 126 224 178;
+  --acc-paper: 11 77 63;
+  --acc-ink: 126 224 178;
+  --stage-a: 18 92 76;
+  --stage-b: 7 38 31;
+  --tile: transparent;
+  color-scheme: dark;
+}
+[data-palette="b"] {
+  --bg: 21 25 24;
+  --surface: 29 36 34;
+  --surface2: 38 48 45;
+  --fg: 238 242 240;
+  --muted: 150 165 160;
+  --accent: 47 191 138;
+  --accentink: 8 22 17;
+  --alert: 255 110 90;
+  --ok: 47 191 138;
+  --paper: 232 236 234;
+  --paper2: 247 248 247;
+  --ink: 21 25 24;
+  --paperline: 200 208 204;
+  --papermuted: 80 95 90;
+  --forest: 11 77 63;
+  --linec: 255 255 255;
+  --gridc: 255 255 255;
+  --acc-bg: 47 191 138;
+  --acc-paper: 11 77 63;
+  --acc-ink: 47 191 138;
+  --stage-a: 30 80 66;
+  --stage-b: 21 25 24;
+  --tile: transparent;
+  color-scheme: dark;
+}
+[data-palette="c"] {
+  --bg: 238 241 239;
+  --surface: 250 251 250;
+  --surface2: 222 228 225;
+  --fg: 11 31 26;
+  --muted: 74 98 90;
+  --accent: 11 77 63;
+  --accentink: 255 255 255;
+  --alert: 178 49 36;
+  --ok: 11 107 83;
+  --paper: 8 58 47;
+  --paper2: 11 77 63;
+  --ink: 238 243 241;
+  --paperline: 70 130 112;
+  --papermuted: 170 200 190;
+  --forest: 7 38 31;
+  --linec: 11 31 26;
+  --gridc: 11 31 26;
+  --acc-bg: 11 77 63;
+  --acc-paper: 126 224 178;
+  --acc-ink: 11 77 63;
+  --stage-a: 18 92 76;
+  --stage-b: 7 38 31;
+  --tile: #07261f;
+  color-scheme: light;
+}
+[data-palette="d"] {
+  --bg: 10 28 22;
+  --surface: 14 40 32;
+  --surface2: 11 77 63;
+  --fg: 238 243 241;
+  --muted: 160 184 176;
+  --accent: 254 89 69;
+  --accentink: 28 20 18;
+  --alert: 255 138 120;
+  --ok: 126 224 178;
+  --paper: 214 219 217;
+  --paper2: 234 237 236;
+  --ink: 10 28 22;
+  --paperline: 170 178 174;
+  --papermuted: 64 84 76;
+  --forest: 11 77 63;
+  --linec: 255 255 255;
+  --gridc: 255 255 255;
+  --acc-bg: 254 89 69;
+  --acc-paper: 168 48 34;
+  --acc-ink: 254 89 69;
+  --stage-a: 18 92 76;
+  --stage-b: 10 28 22;
+  --tile: transparent;
+  color-scheme: dark;
+}
+[data-palette="c"] .bg-forest { --fg: 238 243 241; --muted: 170 200 190; --linec: 255 255 255; }
+html { scroll-behavior: smooth; }
+body { background: rgb(var(--bg)); color: rgb(var(--fg)); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-6xl; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .site-header { top: env(safe-area-inset-top, 0px); }
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(var(--gridc) / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--gridc) / 0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at 70% 30%, #000 20%, transparent 75%);
+  }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.18em]; }
+  .label { @apply text-xs font-semibold uppercase tracking-[0.12em] text-muted; }
+  .input { @apply w-full rounded-xl border border-line bg-surface2/60 px-4 py-3 text-base text-fg placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-bold text-accentink shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg focus-visible:ring-offset-2 focus-visible:ring-offset-bg; }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-fg/25 px-5 py-3 text-sm font-semibold text-fg transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent; }
+  .photo-stage { background: radial-gradient(ellipse at 50% 35%, rgb(var(--stage-a)) 0%, rgb(var(--stage-b)) 72%); }
+  .logo-tile { background: var(--tile); }
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 50; background: rgb(var(--bg)); }
+
+/* Цвет акцентного текста зависит от фона, на котором он стоит */
+.text-accent { color: rgb(var(--acc-bg)); }
+.bg-paper .text-accent, .bg-paper2 .text-accent { color: rgb(var(--acc-paper)); }
+.bg-ink .text-accent, .bg-forest .text-accent { color: rgb(var(--acc-ink)); }
