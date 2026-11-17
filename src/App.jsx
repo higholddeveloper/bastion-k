@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ShieldCheck, Phone, Menu, X, Video, Siren, Radio, Users, ShieldAlert, Landmark,
   Cpu, Antenna, MonitorSmartphone, Clock, MapPin, Mail, MessageCircle, AtSign,
@@ -113,19 +113,19 @@ const CHOOSE_POINTS = [
 ];
 
 const CHAIN = [
-  { icon: Eye, title: "Датчик", text: "Фиксирует проникновение, дым или тревожную кнопку" },
-  { icon: Cpu, title: "«Гранат» или «Лунь»", text: "Принимает сигнал датчика и передаёт тревогу на пульт" },
-  { icon: Radio, title: "Пульт охраны «Бастион К»", text: "Дежурный оператор круглосуточно получает событие и адрес объекта" },
-  { icon: ShieldAlert, title: "Группа реагирования", text: "Выезжает на объект и сообщает результат" },
+  { icon: Eye, anim: "glance", title: "Датчик", text: "Фиксирует проникновение, дым или тревожную кнопку" },
+  { icon: Cpu, anim: "redraw", title: "«Гранат» или «Лунь»", text: "Принимает сигнал датчика и передаёт тревогу на пульт" },
+  { icon: Radio, anim: "redraw", title: "Пульт охраны «Бастион К»", text: "Дежурный оператор круглосуточно получает событие и адрес объекта" },
+  { icon: ShieldAlert, anim: "redraw", title: "Группа реагирования", text: "Выезжает на объект и сообщает результат" },
 ];
 
 const ADVANTAGES = [
-  { icon: Clock, title: "Быстрое реагирование", text: "Пульт принимает тревогу круглосуточно, группа выезжает на объект сразу после сигнала." },
-  { icon: Layers, title: "Система под ваш объект", text: "«Гранат» без проводов для готового ремонта, «Лунь» по кабелю для максимальной надёжности. Подберём то, что подходит именно вам." },
-  { icon: Cable, title: "Надёжная связь с датчиками", text: "Проводная «Лунь» не боится радиопомех, а «Гранат» постоянно контролирует связь с датчиками и их состояние." },
-  { icon: ShieldCheck, title: "Собственная станция мониторинга", text: "Сигналы с охраняемых объектов принимаем сами, без посредников и передачи заказа третьим лицам." },
-  { icon: Home, title: "Полный комплекс услуг", text: "Сигнализация, видеонаблюдение, пульт, физическая охрана и инкассация у одного подрядчика." },
-  { icon: Users, title: "Работаем с 2010 года", text: "Более 100 сотрудников и более 150 клиентов, в том числе банки и крупные компании региона." },
+  { icon: Clock, anim: "clock", title: "Быстрое реагирование", text: "Пульт принимает тревогу круглосуточно, группа выезжает на объект сразу после сигнала." },
+  { icon: Layers, anim: "layers", title: "Система под ваш объект", text: "«Гранат» без проводов для готового ремонта, «Лунь» по кабелю для максимальной надёжности. Подберём то, что подходит именно вам." },
+  { icon: Cable, anim: "redraw", title: "Надёжная связь с датчиками", text: "Проводная «Лунь» не боится радиопомех, а «Гранат» постоянно контролирует связь с датчиками и их состояние." },
+  { icon: ShieldCheck, anim: "check", title: "Собственная станция мониторинга", text: "Сигналы с охраняемых объектов принимаем сами, без посредников и передачи заказа третьим лицам." },
+  { icon: Home, anim: "door", title: "Полный комплекс услуг", text: "Сигнализация, видеонаблюдение, пульт, физическая охрана и инкассация у одного подрядчика." },
+  { icon: Users, anim: "redraw", title: "Работаем с 2010 года", text: "Более 100 сотрудников и более 150 клиентов, в том числе банки и крупные компании региона." },
 ];
 
 const FAQ = [
@@ -214,6 +214,36 @@ function Logo({ className = "" }) {
       </span>
     </a>
   );
+}
+
+/* Кнопка Gradient Shadow: градиентная рамка и размытая градиентная тень под ней */
+function GlowButton({ href, onClick, type = "button", tone = "default", size = "md", className = "", children }) {
+  const Tag = href ? "a" : "button";
+  const props = href ? { href, onClick } : { type, onClick };
+  return (
+    <div className={`gbtn ${className}`} data-tone={tone} data-size={size}>
+      <Tag {...props} className="gbtn-face">
+        <span className="gbtn-in">{children}</span>
+      </Tag>
+      <span className="gbtn-glow" aria-hidden="true" />
+    </div>
+  );
+}
+
+/* Контейнер, который один раз запускает анимацию значков, когда попадает в экран */
+function Reveal({ as: Tag = "div", className, children }) {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    el.querySelectorAll("svg *").forEach((n) => n.setAttribute("pathLength", "1"));
+    if (!("IntersectionObserver" in window)) { setOn(true); return undefined; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setOn(true); io.disconnect(); } }, { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <Tag ref={ref} className={className} data-inview={on ? "true" : "false"}>{children}</Tag>;
 }
 
 function PhotoPlaceholder({ icon: Icon, label }) {
@@ -377,9 +407,15 @@ function LeadForm({ variant = "hero", idPrefix }) {
         <p id={`${idPrefix}-err`} className="text-sm text-alert" role="alert">{error}</p>
       )}
 
-      <button type="submit" className="btn-primary w-full">
-        {variant === "hero" ? "Рассчитать стоимость" : "Оставить заявку"} <ArrowRight size={18} />
-      </button>
+      {variant === "hero" ? (
+        <button type="submit" className="btn-primary w-full">
+          Рассчитать стоимость <ArrowRight size={18} />
+        </button>
+      ) : (
+        <GlowButton type="submit" className="w-full">
+          Оставить заявку <ArrowRight size={18} />
+        </GlowButton>
+      )}
       <p className="text-xs leading-relaxed text-muted">
         Расчёт бесплатный и ни к чему не обязывает. Нажимая кнопку, вы соглашаетесь на обработку контактных данных для связи по заявке.
       </p>
@@ -421,9 +457,9 @@ export default function App() {
               <Phone size={16} className="text-accent" />
               <span className="tabular-nums">{COMPANY.phones[0].display}</span>
             </a>
-            <a href="#request" className="btn-primary hidden !px-4 !py-2.5 text-sm sm:inline-flex">
+            <GlowButton href="#request" size="sm" className="hidden sm:inline-block">
               Оставить заявку
-            </a>
+            </GlowButton>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -447,7 +483,7 @@ export default function App() {
               <a href={`tel:${COMPANY.phones[0].tel}`} className="flex items-center gap-2 py-3.5 font-semibold">
                 <Phone size={18} className="text-accent" /> <span className="tabular-nums">{COMPANY.phones[0].display}</span>
               </a>
-              <a href="#request" onClick={() => setOpen(false)} className="btn-primary mt-1 w-full">Оставить заявку</a>
+              <GlowButton href="#request" onClick={() => setOpen(false)} className="mt-3 mb-1 block w-full">Оставить заявку</GlowButton>
             </nav>
           </div>
         )}
@@ -642,9 +678,9 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
-                <a href="#request" className="mt-8 inline-flex items-center justify-center gap-2 self-start rounded-xl bg-accentink px-6 py-3.5 text-base font-bold !text-accent transition hover:brightness-125 lg:mt-auto">
+                <GlowButton href="#request" tone="accent" className="mt-8 self-start lg:mt-auto">
                   Подобрать систему <ArrowRight size={18} />
-                </a>
+                </GlowButton>
               </article>
             </div>
 
@@ -654,11 +690,11 @@ export default function App() {
                 <h2 className="max-w-xl text-balance font-display text-3xl font-semibold uppercase leading-tight tracking-wide sm:text-4xl">
                   Как тревога доходит от датчика до группы реагирования
                 </h2>
-                <ol className="mt-8 flex flex-col">
-                  {CHAIN.map(({ icon: Icon, title, text }, i) => (
-                    <li key={title} className="relative flex gap-4 pb-7 last:pb-0">
+                <Reveal as="ol" className="mt-8 flex flex-col">
+                  {CHAIN.map(({ icon: Icon, anim, title, text }, i) => (
+                    <li key={title} data-anim={anim} className="ico-item relative flex gap-4 pb-7 last:pb-0">
                       {i < CHAIN.length - 1 && <span className="absolute left-[23px] top-12 h-[calc(100%-2rem)] w-px bg-line" aria-hidden="true" />}
-                      <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-surface2 text-accent ring-1 ring-line">
+                      <span style={{ "--i": i }} className="ico-tile relative grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-surface2 text-accent ring-1 ring-line">
                         <Icon size={22} />
                       </span>
                       <div className="pt-1">
@@ -667,7 +703,7 @@ export default function App() {
                       </div>
                     </li>
                   ))}
-                </ol>
+                </Reveal>
               </div>
 
               <figure className="overflow-hidden rounded-3xl border border-line bg-surface shadow-lift">
@@ -696,10 +732,10 @@ export default function App() {
             <h2 id="adv-title" className="mt-3 max-w-3xl text-balance font-display text-4xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-5xl">
               Почему бизнес и семьи выбирают «Бастион К»
             </h2>
-            <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-              {ADVANTAGES.map(({ icon: Icon, title, text }) => (
-                <div key={title} className="flex gap-4">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/25">
+            <Reveal className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+              {ADVANTAGES.map(({ icon: Icon, anim, title, text }, i) => (
+                <div key={title} data-anim={anim} className="ico-item flex gap-4">
+                  <span style={{ "--i": i }} className="ico-tile grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/25">
                     <Icon size={22} />
                   </span>
                   <div className="min-w-0">
@@ -708,7 +744,7 @@ export default function App() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Reveal>
 
             <div className="mt-16 grid gap-5 md:grid-cols-2">
               <article className="relative overflow-hidden rounded-3xl bg-accent p-8 text-accentink shadow-lift">

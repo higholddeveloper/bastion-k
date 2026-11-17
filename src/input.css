@@ -127,6 +127,23 @@ body { background: rgb(var(--bg)); color: rgb(var(--fg)); }
   .input { @apply w-full rounded-xl border border-line bg-surface2/60 px-4 py-3 text-base text-fg placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40; }
   .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-bold text-accentink shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg focus-visible:ring-offset-2 focus-visible:ring-offset-bg; }
   .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-fg/25 px-5 py-3 text-sm font-semibold text-fg transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent; }
+  .gbtn { position: relative; display: inline-block; }
+  .gbtn-face { position: relative; z-index: 10; display: block; width: 100%; border: 0; border-radius: 14px; padding: 2px; cursor: pointer; text-decoration: none; background-image: linear-gradient(135deg, rgb(var(--g1)), rgb(var(--g2))); transition: transform 300ms var(--ease-out); }
+  .gbtn:hover .gbtn-face { transform: scale(1.05); }
+  .gbtn:active .gbtn-face { transform: scale(0.97); }
+  .gbtn-face:focus-visible { outline: 2px solid rgb(var(--fg)); outline-offset: 4px; }
+  .gbtn-in { display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 12px; padding: 0.875rem 1.5rem; font-size: 1rem; line-height: 1.5rem; font-weight: 700; white-space: nowrap; background: rgb(var(--bg)); color: rgb(var(--fg)); transition: background-color 300ms var(--ease-out); }
+  .gbtn[data-size="sm"] .gbtn-in { padding: 0.625rem 1rem; font-size: 0.875rem; line-height: 1.25rem; }
+  .gbtn:hover .gbtn-in { background: rgb(var(--bg) / 0.55); }
+  .gbtn-glow { position: absolute; inset: -12px; z-index: 0; border-radius: 20px; pointer-events: none; transform: translateZ(0); background-image: linear-gradient(135deg, rgb(var(--g1)), rgb(var(--g2))); opacity: 0.3; filter: blur(22px); transition: opacity 300ms var(--ease-out); }
+  .gbtn:hover .gbtn-glow { opacity: 0.85; }
+  .gbtn:active .gbtn-glow { opacity: 0.5; }
+  /* Кнопка на акцентной плашке: тёмное лицо, градиент и тень в тёмных тонах */
+  .gbtn[data-tone="accent"] .gbtn-face, .gbtn[data-tone="accent"] .gbtn-glow { background-image: linear-gradient(135deg, rgb(var(--accentink)), rgb(var(--forest))); }
+  .gbtn[data-tone="accent"] .gbtn-in { background: rgb(var(--accentink)); color: rgb(var(--accent)); }
+  .gbtn[data-tone="accent"]:hover .gbtn-in { background: rgb(var(--accentink) / 0.85); }
+  .gbtn[data-tone="accent"] .gbtn-glow { opacity: 0.35; }
+  .gbtn[data-tone="accent"]:hover .gbtn-glow { opacity: 0.7; }
   .photo-stage { background: radial-gradient(ellipse at 50% 35%, rgb(var(--stage-a)) 0%, rgb(var(--stage-b)) 72%); }
   .logo-tile { background: var(--tile); }
 }
@@ -136,3 +153,26 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .text-accent { color: rgb(var(--acc-bg)); }
 .bg-paper .text-accent, .bg-paper2 .text-accent { color: rgb(var(--acc-paper)); }
 .bg-ink .text-accent, .bg-forest .text-accent { color: rgb(var(--acc-ink)); }
+
+/* Градиенты кнопок по палитрам */
+:root,[data-palette="a"] { --g1: 126 224 178; --g2: 214 224 220; --ease-out: cubic-bezier(0.22, 1, 0.36, 1); }
+[data-palette="b"] { --g1: 47 191 138; --g2: 214 224 220; }
+[data-palette="c"] { --g1: 11 77 63; --g2: 94 168 142; }
+[data-palette="d"] { --g1: 254 89 69; --g2: 255 184 107; }
+
+/* Значки: прорисовка контура при появлении блока и оживание при наведении */
+.ico-tile { opacity: 0; transform: scale(0.92); --dt: stroke-dashoffset 700ms var(--ease-out) calc(var(--i, 0) * 120ms + 200ms); }
+.ico-tile svg * { stroke-dasharray: 1 2; stroke-dashoffset: 1; }
+[data-inview="true"] .ico-tile { opacity: 1; transform: none; transition: opacity 300ms var(--ease-out), transform 300ms var(--ease-out); transition-delay: calc(var(--i, 0) * 120ms); }
+[data-inview="true"] .ico-tile svg * { stroke-dashoffset: 0; transition: var(--dt); }
+@keyframes ico-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.ico-item[data-anim="redraw"]:hover svg *,
+.ico-item[data-anim="check"]:hover svg path:last-child,
+.ico-item[data-anim="door"]:hover svg path:first-child { animation: ico-draw 600ms var(--ease-out); }
+.ico-item[data-anim="clock"] svg path { transform-origin: 12px 12px; transition: var(--dt), transform 700ms var(--ease-out); }
+.ico-item[data-anim="clock"]:hover svg path { transform: rotate(360deg); }
+.ico-item[data-anim="layers"] svg path:nth-child(1), .ico-item[data-anim="layers"] svg path:nth-child(3) { transition: var(--dt), transform 300ms var(--ease-out); }
+.ico-item[data-anim="layers"]:hover svg path:nth-child(1) { transform: translateY(-1.5px); }
+.ico-item[data-anim="layers"]:hover svg path:nth-child(3) { transform: translateY(1.5px); }
+.ico-item[data-anim="glance"] svg circle { transition: var(--dt), transform 300ms var(--ease-out); }
+.ico-item[data-anim="glance"]:hover svg circle { transform: translateX(2px); }
