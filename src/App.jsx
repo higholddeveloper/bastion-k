@@ -216,17 +216,15 @@ function Logo({ className = "" }) {
   );
 }
 
-/* Кнопка Gradient Shadow: градиентная рамка и размытая градиентная тень под ней */
-function GlowButton({ href, onClick, type = "button", tone = "default", size = "md", className = "", children }) {
+/* Кнопка Shiny: тонкая рамка и блик, который периодически пробегает по тексту и контуру */
+function ShinyButton({ href, onClick, type = "button", size = "md", className = "", children }) {
   const Tag = href ? "a" : "button";
   const props = href ? { href, onClick } : { type, onClick };
   return (
-    <div className={`gbtn ${className}`} data-tone={tone} data-size={size}>
-      <Tag {...props} className="gbtn-face">
-        <span className="gbtn-in">{children}</span>
-      </Tag>
-      <span className="gbtn-glow" aria-hidden="true" />
-    </div>
+    <Tag {...props} className={`shiny ${className}`} data-size={size}>
+      <span className="shiny-text">{children}</span>
+      <span className="shiny-edge" aria-hidden="true" />
+    </Tag>
   );
 }
 
@@ -412,9 +410,9 @@ function LeadForm({ variant = "hero", idPrefix }) {
           Рассчитать стоимость <ArrowRight size={18} />
         </button>
       ) : (
-        <GlowButton type="submit" className="w-full">
-          Оставить заявку <ArrowRight size={18} />
-        </GlowButton>
+        <ShinyButton type="submit" className="w-full">
+          Оставить заявку <ArrowRight size={16} />
+        </ShinyButton>
       )}
       <p className="text-xs leading-relaxed text-muted">
         Расчёт бесплатный и ни к чему не обязывает. Нажимая кнопку, вы соглашаетесь на обработку контактных данных для связи по заявке.
@@ -457,9 +455,9 @@ export default function App() {
               <Phone size={16} className="text-accent" />
               <span className="tabular-nums">{COMPANY.phones[0].display}</span>
             </a>
-            <GlowButton href="#request" size="sm" className="hidden sm:inline-block">
+            <ShinyButton href="#request" size="sm" className="hidden sm:inline-flex">
               Оставить заявку
-            </GlowButton>
+            </ShinyButton>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -483,7 +481,7 @@ export default function App() {
               <a href={`tel:${COMPANY.phones[0].tel}`} className="flex items-center gap-2 py-3.5 font-semibold">
                 <Phone size={18} className="text-accent" /> <span className="tabular-nums">{COMPANY.phones[0].display}</span>
               </a>
-              <GlowButton href="#request" onClick={() => setOpen(false)} className="mt-3 mb-1 block w-full">Оставить заявку</GlowButton>
+              <ShinyButton href="#request" onClick={() => setOpen(false)} className="mt-3 mb-1 w-full">Оставить заявку</ShinyButton>
             </nav>
           </div>
         )}
@@ -678,9 +676,9 @@ export default function App() {
                     </li>
                   ))}
                 </ul>
-                <GlowButton href="#request" tone="accent" className="mt-8 self-start lg:mt-auto">
+                <a href="#request" className="mt-8 inline-flex items-center justify-center gap-2 self-start rounded-xl bg-accentink px-6 py-3.5 text-base font-bold !text-accent transition hover:brightness-125 lg:mt-auto">
                   Подобрать систему <ArrowRight size={18} />
-                </GlowButton>
+                </a>
               </article>
             </div>
 

@@ -127,23 +127,6 @@ body { background: rgb(var(--bg)); color: rgb(var(--fg)); }
   .input { @apply w-full rounded-xl border border-line bg-surface2/60 px-4 py-3 text-base text-fg placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40; }
   .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3.5 text-base font-bold text-accentink shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg focus-visible:ring-offset-2 focus-visible:ring-offset-bg; }
   .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-fg/25 px-5 py-3 text-sm font-semibold text-fg transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent; }
-  .gbtn { position: relative; display: inline-block; }
-  .gbtn-face { position: relative; z-index: 10; display: block; width: 100%; border: 0; border-radius: 14px; padding: 2px; cursor: pointer; text-decoration: none; background-image: linear-gradient(135deg, rgb(var(--g1)), rgb(var(--g2))); transition: transform 300ms var(--ease-out); }
-  .gbtn:hover .gbtn-face { transform: scale(1.05); }
-  .gbtn:active .gbtn-face { transform: scale(0.97); }
-  .gbtn-face:focus-visible { outline: 2px solid rgb(var(--fg)); outline-offset: 4px; }
-  .gbtn-in { display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 12px; padding: 0.875rem 1.5rem; font-size: 1rem; line-height: 1.5rem; font-weight: 700; white-space: nowrap; background: rgb(var(--bg)); color: rgb(var(--fg)); transition: background-color 300ms var(--ease-out); }
-  .gbtn[data-size="sm"] .gbtn-in { padding: 0.625rem 1rem; font-size: 0.875rem; line-height: 1.25rem; }
-  .gbtn:hover .gbtn-in { background: rgb(var(--bg) / 0.55); }
-  .gbtn-glow { position: absolute; inset: -12px; z-index: 0; border-radius: 20px; pointer-events: none; transform: translateZ(0); background-image: linear-gradient(135deg, rgb(var(--g1)), rgb(var(--g2))); opacity: 0.3; filter: blur(22px); transition: opacity 300ms var(--ease-out); }
-  .gbtn:hover .gbtn-glow { opacity: 0.85; }
-  .gbtn:active .gbtn-glow { opacity: 0.5; }
-  /* Кнопка на акцентной плашке: тёмное лицо, градиент и тень в тёмных тонах */
-  .gbtn[data-tone="accent"] .gbtn-face, .gbtn[data-tone="accent"] .gbtn-glow { background-image: linear-gradient(135deg, rgb(var(--accentink)), rgb(var(--forest))); }
-  .gbtn[data-tone="accent"] .gbtn-in { background: rgb(var(--accentink)); color: rgb(var(--accent)); }
-  .gbtn[data-tone="accent"]:hover .gbtn-in { background: rgb(var(--accentink) / 0.85); }
-  .gbtn[data-tone="accent"] .gbtn-glow { opacity: 0.35; }
-  .gbtn[data-tone="accent"]:hover .gbtn-glow { opacity: 0.7; }
   .photo-stage { background: radial-gradient(ellipse at 50% 35%, rgb(var(--stage-a)) 0%, rgb(var(--stage-b)) 72%); }
   .logo-tile { background: var(--tile); }
 }
@@ -154,11 +137,19 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bg-paper .text-accent, .bg-paper2 .text-accent { color: rgb(var(--acc-paper)); }
 .bg-ink .text-accent, .bg-forest .text-accent { color: rgb(var(--acc-ink)); }
 
-/* Градиенты кнопок по палитрам */
-:root,[data-palette="a"] { --g1: 126 224 178; --g2: 214 224 220; --ease-out: cubic-bezier(0.22, 1, 0.36, 1); }
-[data-palette="b"] { --g1: 47 191 138; --g2: 214 224 220; }
-[data-palette="c"] { --g1: 11 77 63; --g2: 94 168 142; }
-[data-palette="d"] { --g1: 254 89 69; --g2: 255 184 107; }
+:root { --ease-out: cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* Кнопка Shiny: блик бежит по тексту и рамке (по мотивам hover.dev, без framer-motion) */
+@property --x { syntax: "<percentage>"; inherits: true; initial-value: 100%; }
+@keyframes shiny-sweep { 0% { --x: 100%; } 70%, 100% { --x: -100%; } }
+.shiny { position: relative; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; padding: 0.875rem 1.5rem; border: 0; cursor: pointer; text-decoration: none; background: radial-gradient(circle at 50% 0%, rgb(var(--accent) / 0.2) 0%, transparent 60%); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); animation: shiny-sweep 3.6s cubic-bezier(0.45, 0, 0.25, 1) infinite; transition: box-shadow 300ms var(--ease-out), transform 150ms var(--ease-out); }
+.shiny:hover { box-shadow: 0 0 22px rgb(var(--accent) / 0.28); }
+.shiny:active { transform: scale(0.97); }
+.shiny:focus-visible { outline: 2px solid rgb(var(--fg)); outline-offset: 3px; }
+.shiny[data-size="sm"] { padding: 0.625rem 1rem; }
+.shiny-text { position: relative; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.9375rem; line-height: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; color: rgb(var(--fg)); -webkit-mask-image: linear-gradient(-75deg, #000 calc(var(--x) + 20%), transparent calc(var(--x) + 30%), #000 calc(var(--x) + 100%)); mask-image: linear-gradient(-75deg, #000 calc(var(--x) + 20%), transparent calc(var(--x) + 30%), #000 calc(var(--x) + 100%)); }
+.shiny[data-size="sm"] .shiny-text { font-size: 0.8125rem; line-height: 1.25rem; }
+.shiny-edge { position: absolute; inset: 0; z-index: 10; border-radius: inherit; padding: 1px; pointer-events: none; background: linear-gradient(-75deg, rgb(var(--accent) / 0.3) calc(var(--x) + 20%), rgb(var(--accent) / 1) calc(var(--x) + 25%), rgb(var(--accent) / 0.3) calc(var(--x) + 100%)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; }
 
 /* Значки: прорисовка контура при появлении блока и оживание при наведении */
 .ico-tile { opacity: 0; transform: scale(0.92); --dt: stroke-dashoffset 700ms var(--ease-out) calc(var(--i, 0) * 120ms + 200ms); }
