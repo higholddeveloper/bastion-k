@@ -3,7 +3,7 @@ import {
   ShieldCheck, Phone, Menu, X, Video, Siren, Radio, Users, ShieldAlert, Landmark,
   Cpu, Antenna, MonitorSmartphone, Clock, MapPin, Mail, MessageCircle, AtSign,
   CheckCircle2, ChevronDown, ArrowRight, Image as ImageIcon, Flame, Home, Building2,
-  Store, BadgePercent, Gift, Send, Zap, Eye, Layers, Cable, Wifi, RotateCcw,
+  Store, BadgePercent, Gift, Send, Zap, Eye, Layers, Cable, Wifi,
 } from "lucide-react";
 /* Фото лежат в assets/ в двух размерах: -800 для телефонов и -1600 для больших экранов */
 const SIZES = { "4x3": [800, 597], "16x9": [960, 536], "3x4": [600, 804] };
@@ -293,84 +293,53 @@ function PhotoPlaceholder({ icon: Icon, label }) {
 }
 
 
-/* Hero-видео: играет один раз и замирает на последнем кадре. Подписи идут по времени ролика */
-const HERO_STEPS = [
-  { at: 0, label: "Сработала тревога" },
-  { at: 1.6, label: "Пульт принял сигнал" },
-  { at: 4.2, label: "Группа на объекте" },
-];
+/* Hero-видео: ролик крутится по кругу, в конце плавно гаснет к стартовому кадру, чтобы стык не был резким */
 function useHeroVideo() {
   const ref = useRef(null);
-  const [t, setT] = useState(0);
-  const [done, setDone] = useState(false);
+  const [fade, setFade] = useState(false);
   const [still, setStill] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    const stop = () => { setStill(true); setDone(true); setT(99); };
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const saver = navigator.connection && navigator.connection.saveData;
-    if (reduce || saver) { stop(); return; }
+    if (reduce || saver) { setStill(true); return; }
     const small = window.matchMedia("(max-width: 767px)").matches;
     const mp4 = v.canPlayType('video/mp4; codecs="avc1.42E01E"') !== "";
     v.src = `assets/hero-${small ? "720" : "1080"}.${mp4 ? "mp4" : "webm"}`;
     v.load();
     const p = v.play();
-    if (p && p.catch) p.catch(stop);
+    if (p && p.catch) p.catch(() => setStill(true));
   }, []);
 
-  const replay = () => {
-    const v = ref.current;
-    if (!v) return;
-    setDone(false); setT(0); v.currentTime = 0; v.play();
+  const onTime = (e) => {
+    const v = e.currentTarget;
+    setFade(v.duration > 0 && v.currentTime > v.duration - 0.6);
   };
-  return { ref, t, setT, done, setDone, still, replay };
+  return { ref, fade, still, onTime };
 }
 
 function HeroMedia({ vid }) {
-  const { ref, setT, setDone, still } = vid;
+  const { ref, fade, still, onTime } = vid;
   return (
     <div className="absolute inset-x-0 top-0 h-[340px] sm:h-[460px] lg:inset-0 lg:h-full" aria-hidden="true">
       {still ? (
         <Photo name="hero-end" ratio="16x9" wide={1920} eager sizes="100vw" className="h-full w-full object-cover object-[72%_50%] lg:object-center" />
       ) : (
-        <video
-          ref={ref}
-          className="h-full w-full object-cover object-[72%_50%] lg:object-center"
-          poster="assets/hero-start-960.webp"
-          muted playsInline preload="auto"
-          onTimeUpdate={(e) => setT(e.currentTarget.currentTime)}
-          onEnded={() => { setDone(true); setT(99); }}
-        />
+        <>
+          <img src="assets/hero-start-960.webp" srcSet="assets/hero-start-960.webp 960w, assets/hero-start-1920.webp 1920w" sizes="100vw" alt="" className="absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-center" />
+          <video
+            ref={ref}
+            className={`absolute inset-0 h-full w-full object-cover object-[72%_50%] transition-opacity duration-500 lg:object-center ${fade ? "opacity-0" : "opacity-100"}`}
+            muted loop playsInline preload="auto"
+            onTimeUpdate={onTime}
+          />
+        </>
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/70 lg:to-transparent lg:to-[62%]" />
       <div className="absolute inset-x-0 bottom-0 hidden h-32 bg-gradient-to-t from-bg to-transparent lg:block" />
     </div>
-  );
-}
-
-function HeroSteps({ vid }) {
-  const { t, done, still, replay } = vid;
-  const active = HERO_STEPS.reduce((a, st, i) => (t >= st.at ? i : a), 0);
-  return (
-    <ol className="mt-9 flex max-w-xl items-start gap-2 sm:gap-3" aria-label="Как сработает охрана">
-      {HERO_STEPS.map((st, i) => (
-        <li key={st.label} className="flex-1">
-          <div className="h-0.5 overflow-hidden rounded-full bg-fg/20">
-            <div className={`h-full rounded-full ${i === 2 ? "bg-accent" : "bg-alert"} transition-[width] duration-700 ease-out`} style={{ width: i <= active ? "100%" : "0%" }} />
-          </div>
-          <p className={`mt-2.5 text-[13px] font-medium leading-tight transition-colors duration-500 ${i <= active ? "text-fg" : "text-muted/60"}`}>{st.label}</p>
-        </li>
-      ))}
-      {done && !still && (
-        <li>
-          <button type="button" onClick={replay} className="-mt-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-fg/25 text-fg transition hover:border-accent hover:text-accent" aria-label="Показать ещё раз">
-            <RotateCcw size={14} />
-          </button>
-        </li>
-      )}
-    </ol>
   );
 }
 
@@ -620,7 +589,6 @@ export default function App() {
               <p className="mt-4 flex items-center gap-2 text-sm font-medium text-accent">
                 <BadgePercent size={16} /> Скидка 50% на первый месяц охраны
               </p>
-              <HeroSteps vid={heroVid} />
             </div>
           </div>
         </section>
