@@ -601,11 +601,6 @@ export default function App() {
                       : "border border-paperline bg-paper2 shadow-card hover:shadow-lift"
                   }`}
                 >
-                  {featured && (
-                    <span className="absolute right-5 top-5 rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-accentink">
-                      Основа охраны
-                    </span>
-                  )}
                   <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-ink">
                     <Photo name={photo} alt={photoAlt} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                   </div>
@@ -784,8 +779,8 @@ export default function App() {
               <article className="relative overflow-hidden rounded-3xl border border-line bg-forest p-8 shadow-card">
                 <Gift size={34} className="text-accent" />
                 <p className="mt-4 font-display text-6xl font-bold leading-none text-fg">1 месяц</p>
-                <h3 className="mt-3 font-display text-2xl font-semibold uppercase tracking-wide text-fg">Бесплатного пульта за друга</h3>
-                <p className="mt-2 max-w-sm text-muted">Приведите друга и получите бесплатный месяц на пульт. Условия уточняйте у менеджера.</p>
+                <h3 className="mt-3 font-display text-2xl font-semibold uppercase tracking-wide text-fg">Бесплатной охраны на пульте</h3>
+                <p className="mt-2 max-w-sm text-muted">Приведите друга, который подключит охрану, и получите 1 месяц бесплатной охраны на пульте. Условия уточняйте у менеджера.</p>
                 <a href="#request" className="btn-ghost mt-6">Привести друга <ArrowRight size={16} /></a>
               </article>
             </div>
@@ -795,30 +790,38 @@ export default function App() {
         {/* ЗАЯВКА */}
         <section id="request" className="scroll-mt-20 relative overflow-hidden border-y border-line" aria-labelledby="request-title">
           <div className="absolute inset-0 grid-bg opacity-50" aria-hidden="true" />
-          <div className="wrap relative grid gap-10 py-16 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <p className="eyebrow text-accent">Заявка на охрану</p>
-              <h2 id="request-title" className="mt-3 text-balance font-display text-4xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-5xl">
-                Оставьте заявку, рассчитаем охрану под ваш объект
-              </h2>
-              <p className="mt-5 max-w-md text-lg text-muted">
-                Менеджер перезвонит, уточнит детали и назовёт стоимость. Хотите быстрее, напишите в WhatsApp.
-              </p>
-              <a href={`https://wa.me/${COMPANY.whatsapp.wa}`} target="_blank" rel="noreferrer" className="btn-ghost mt-7">
-                <MessageCircle size={18} /> Написать в WhatsApp
-              </a>
-              <p className="mt-3 text-sm text-muted tabular-nums">{COMPANY.whatsapp.display}</p>
-              <div className="mt-8 hidden max-w-sm overflow-hidden rounded-3xl border border-line shadow-lift sm:block">
+          <div className="wrap relative py-16 sm:py-24">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+              <div>
+                <p className="eyebrow text-accent">Заявка на охрану</p>
+                <h2 id="request-title" className="mt-3 text-balance font-display text-4xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-5xl">
+                  Оставьте заявку, рассчитаем охрану под ваш объект
+                </h2>
+              </div>
+              <div>
+                <p className="max-w-md text-lg text-muted">
+                  Менеджер перезвонит, уточнит детали и назовёт стоимость. Хотите быстрее, напишите в WhatsApp.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <a href={`https://wa.me/${COMPANY.whatsapp.wa}`} target="_blank" rel="noreferrer" className="btn-ghost">
+                    <MessageCircle size={18} /> Написать в WhatsApp
+                  </a>
+                  <p className="text-sm text-muted tabular-nums">{COMPANY.whatsapp.display}</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+              <div className="relative hidden aspect-[16/9] overflow-hidden rounded-3xl border border-line shadow-lift sm:block lg:aspect-auto lg:min-h-[420px]">
                 <Photo
                   name="operator" ratio="3x4" wide={1200}
                   alt="Оператор «Бастион К» в гарнитуре отвечает на звонок"
-                  sizes="384px"
-                  className="aspect-[4/3] w-full object-cover object-[50%_28%]"
+                  sizes="(min-width:1024px) 40vw, 90vw"
+                  className="absolute inset-0 h-full w-full object-cover object-[50%_30%]"
                 />
               </div>
-            </div>
-            <div className="rounded-3xl border border-line bg-surface p-6 shadow-lift sm:p-8">
-              <LeadForm idPrefix="req" variant="wide" />
+              <div className="flex flex-col justify-center rounded-3xl border border-line bg-surface p-6 shadow-lift sm:p-8 lg:p-10">
+                <LeadForm idPrefix="req" variant="wide" />
+              </div>
             </div>
           </div>
         </section>
