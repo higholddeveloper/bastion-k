@@ -325,20 +325,20 @@ function HeroMedia({ vid }) {
   return (
     <div className="absolute inset-x-0 top-0 h-[340px] sm:h-[460px] lg:inset-0 lg:h-full" aria-hidden="true">
       {still ? (
-        <Photo name="hero-end" ratio="16x9" wide={1920} eager sizes="100vw" className="h-full w-full object-cover object-[72%_50%] lg:object-center" />
+        <Photo name="hero-end" ratio="16x9" wide={1920} eager sizes="100vw" className="h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
       ) : (
         <>
-          <img src="assets/hero-start-960.webp" srcSet="assets/hero-start-960.webp 960w, assets/hero-start-1920.webp 1920w" sizes="100vw" alt="" className="absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-center" />
+          <img src="assets/hero-start-960.webp" srcSet="assets/hero-start-960.webp 960w, assets/hero-start-1920.webp 1920w" sizes="100vw" alt="" className="absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
           <video
             ref={ref}
-            className={`absolute inset-0 h-full w-full object-cover object-[72%_50%] transition-opacity duration-500 lg:object-center ${fade ? "opacity-0" : "opacity-100"}`}
+            className={`absolute inset-0 h-full w-full object-cover object-[72%_50%] transition-opacity duration-500 lg:object-[50%_82%] ${fade ? "opacity-0" : "opacity-100"}`}
             muted loop playsInline preload="auto"
             onTimeUpdate={onTime}
           />
         </>
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/70 lg:to-transparent lg:to-[62%]" />
-      <div className="absolute inset-x-0 bottom-0 hidden h-32 bg-gradient-to-t from-bg to-transparent lg:block" />
+      <div className="absolute inset-x-0 bottom-0 hidden h-10 bg-gradient-to-t from-bg/80 to-transparent lg:block" />
     </div>
   );
 }
@@ -570,7 +570,7 @@ export default function App() {
         {/* HERO */}
         <section className="relative overflow-hidden" aria-labelledby="hero-title">
           <HeroMedia vid={heroVid} />
-          <div className="wrap relative pb-12 pt-[300px] sm:pt-[400px] lg:flex lg:min-h-[660px] lg:items-center lg:py-16">
+          <div className="wrap relative pb-12 pt-[300px] sm:pt-[400px] lg:flex lg:min-h-[max(620px,min(52vw,calc(100svh-72px)))] lg:items-center lg:pb-28 lg:pt-16">
             <div className="lg:max-w-[560px]">
               <p className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-bg/40 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-accent backdrop-blur">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
