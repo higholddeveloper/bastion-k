@@ -592,7 +592,7 @@ export default function App() {
             </p>
 
             <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {SERVICES.map(({ icon: Icon, title, h3, text, featured, photo, photoAlt }) => (
+              {SERVICES.map(({ title, h3, text, featured, photo, photoAlt }) => (
                 <article
                   key={title}
                   className={`group relative flex flex-col rounded-3xl p-7 transition hover:-translate-y-1 ${
@@ -609,10 +609,7 @@ export default function App() {
                   <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-ink">
                     <Photo name={photo} alt={photoAlt} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                   </div>
-                  <span className={`-mt-9 ml-4 grid h-14 w-14 place-items-center rounded-2xl ring-4 ${featured ? "bg-accent text-accentink ring-ink" : "bg-ink text-accent ring-paper2"}`}>
-                    <Icon size={26} strokeWidth={1.9} />
-                  </span>
-                  <h3 className="mt-5 font-display text-[26px] font-semibold uppercase leading-tight tracking-wide">{title}</h3>
+                  <h3 className="mt-6 font-display text-[26px] font-semibold uppercase leading-tight tracking-wide">{title}</h3>
                   <p className={`mt-1 text-sm font-medium ${featured ? "text-accent" : "text-papermuted"}`}>{h3}</p>
                   <p className={`mt-4 flex-1 leading-relaxed ${featured ? "text-muted" : "text-papermuted"}`}>{text}</p>
                   <a
