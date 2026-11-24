@@ -12,7 +12,7 @@ await build({
   minify: true,
   format: "iife",
   jsx: "automatic",
-  loader: { ".webp": "dataurl" },
+  
   define: { "process.env.NODE_ENV": '"production"' },
   outfile: ".build/app.js",
   logLevel: "warning",

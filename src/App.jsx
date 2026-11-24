@@ -5,10 +5,25 @@ import {
   CheckCircle2, ChevronDown, ArrowRight, Image as ImageIcon, Flame, Home, Building2,
   Store, BadgePercent, Gift, Send, Zap, Eye, Layers, Cable, Wifi,
 } from "lucide-react";
-import gtKit from "./img/gt-kit.webp";
-import lunKit from "./img/lun-25k.webp";
-import guardsImg from "./img/guards.webp";
-import gbrImg from "./img/gbr.webp";
+/* Фото лежат в assets/ в двух размерах: -800 для телефонов и -1600 для больших экранов */
+const SIZES = { "4x3": [800, 597], "16x9": [960, 536], "3x4": [600, 804] };
+function Photo({ name, ratio = "4x3", wide = 1600, alt, className = "", sizes, eager = false }) {
+  const [small] = SIZES[ratio];
+  const [, h] = SIZES[ratio];
+  return (
+    <img
+      src={`assets/${name}-${small}.webp`}
+      srcSet={`assets/${name}-${small}.webp ${small}w, assets/${name}-${wide}.webp ${wide}w`}
+      sizes={sizes || "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
+      alt={alt}
+      width={small}
+      height={h}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      className={className}
+    />
+  );
+}
 
 /* ───────── Данные компании (источник: старый сайт bastionk.kg) ───────── */
 const COMPANY = {
@@ -36,6 +51,8 @@ const SERVICES = [
   {
     icon: Radio,
     title: "Пультовая охрана",
+    photo: "monitoring",
+    photoAlt: "Оператор станции мониторинга за несколькими экранами с картой и камерами",
     h3: "Пультовая охрана квартир, домов и офисов",
     text: "Круглосуточный приём сигналов с вашего объекта на собственной станции мониторинга. Тревога видна дежурному сразу, группа реагирования выезжает на адрес.",
     featured: true,
@@ -43,30 +60,40 @@ const SERVICES = [
   {
     icon: Siren,
     title: "Охранная и пожарная сигнализация",
+    photo: "alarm",
+    photoAlt: "Датчик движения «Гранат» на стене в вечерней квартире",
     h3: "Установка и обслуживание сигнализации",
     text: "Оповещение о незаконном проникновении и возгорании. Проектируем, монтируем и обслуживаем системы под ваш объект.",
   },
   {
     icon: Video,
     title: "Видеонаблюдение",
+    photo: "cctv",
+    photoAlt: "Уличная камера видеонаблюдения на стене здания над вечерним городом",
     h3: "Системы видеонаблюдения для дома и бизнеса",
     text: "Видеонаблюдение как часть общей системы безопасности: камеры, запись, обзор объекта в нужный момент.",
   },
   {
     icon: ShieldAlert,
     title: "Группа быстрого реагирования",
+    photo: "gbr",
+    photoAlt: "Автомобиль группы быстрого реагирования «Бастион К» на вечерней улице Бишкека",
     h3: "Оперативная группа с выездом на объект",
     text: "Выезд на адрес при срабатывании тревоги. Сотрудники работают в связке с пультом и знают объекты клиентов.",
   },
   {
     icon: Users,
     title: "Физическая охрана",
+    photo: "guards-4x3",
+    photoAlt: "Трое сотрудников охраны в форме у входа в бизнес-центр",
     h3: "Физическая охрана объектов на посту",
     text: "Контроль объекта сотрудниками на специально оборудованном посту. Для предприятий, складов, магазинов и площадок.",
   },
   {
     icon: Landmark,
     title: "Инкассация",
+    photo: "cash",
+    photoAlt: "Сотрудники инкассации у бронированного автомобиля возле банка",
     h3: "Инкассация денежных средств",
     text: "Сбор и перевозка наличных между организациями и подразделениями. Сохранность при сдаче в кассу и зачислении на счёт.",
   },
@@ -86,7 +113,7 @@ const EQUIPMENT = [
       "Контроль связи с датчиками и их состояния",
       "Наращивание системы без переделки проводки",
     ],
-    img: gtKit,
+    photo: "granat",
     alt: "Стартовый комплект «Гранат»: контроллер, брелок, датчик движения и датчики открытия",
   },
   {
@@ -101,8 +128,8 @@ const EQUIPMENT = [
       "Датчики питаются от прибора, батарейки менять не нужно",
       "Проводка скрыта в стенах и работает годами",
     ],
-    img: lunKit,
-    alt: "Комплект «Лунь»: прибор с клавиатурой, датчик движения и датчик открытия двери",
+    photo: "lun",
+    alt: "Оборудование «Лунь»: прибор, клавиатура, сенсорный экран и ключи на тёмной тумбе",
   },
 ];
 
@@ -565,7 +592,7 @@ export default function App() {
             </p>
 
             <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {SERVICES.map(({ icon: Icon, title, h3, text, featured }) => (
+              {SERVICES.map(({ icon: Icon, title, h3, text, featured, photo, photoAlt }) => (
                 <article
                   key={title}
                   className={`group relative flex flex-col rounded-3xl p-7 transition hover:-translate-y-1 ${
@@ -579,10 +606,13 @@ export default function App() {
                       Основа охраны
                     </span>
                   )}
-                  <span className={`grid h-14 w-14 place-items-center rounded-2xl ${featured ? "bg-accent text-accentink" : "bg-ink text-accent"}`}>
+                  <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-ink">
+                    <Photo name={photo} alt={photoAlt} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                  </div>
+                  <span className={`-mt-9 ml-4 grid h-14 w-14 place-items-center rounded-2xl ring-4 ${featured ? "bg-accent text-accentink ring-ink" : "bg-ink text-accent ring-paper2"}`}>
                     <Icon size={26} strokeWidth={1.9} />
                   </span>
-                  <h3 className="mt-6 font-display text-[26px] font-semibold uppercase leading-tight tracking-wide">{title}</h3>
+                  <h3 className="mt-5 font-display text-[26px] font-semibold uppercase leading-tight tracking-wide">{title}</h3>
                   <p className={`mt-1 text-sm font-medium ${featured ? "text-accent" : "text-papermuted"}`}>{h3}</p>
                   <p className={`mt-4 flex-1 leading-relaxed ${featured ? "text-muted" : "text-papermuted"}`}>{text}</p>
                   <a
@@ -601,14 +631,14 @@ export default function App() {
         <section className="border-b border-line" aria-labelledby="guard-title">
           <div className="wrap py-16 sm:py-24">
             <div className="relative overflow-hidden rounded-3xl border border-line bg-surface shadow-lift">
-              <img
-                src={guardsImg}
-                alt="Двое сотрудников охраны в форме с надписью «Охрана» у входа в бизнес-центр"
-                width="1800" height="1004" loading="lazy" decoding="async"
-                className="aspect-[4/3] w-full object-cover object-[78%_50%] sm:aspect-[16/9] sm:object-center"
+              <Photo
+                name="guards-16x9" ratio="16x9" wide={1920}
+                alt="Трое сотрудников охраны в форме у входа в бизнес-центр вечером"
+                sizes="(min-width: 1280px) 1200px, 100vw"
+                className="aspect-[4/3] w-full object-cover object-[30%_50%] sm:aspect-[16/9] sm:object-center"
               />
-              <div className="absolute inset-0 hidden bg-gradient-to-r from-bg/95 via-bg/60 to-transparent sm:block" aria-hidden="true" />
-              <div className="p-6 sm:absolute sm:inset-y-0 sm:left-0 sm:flex sm:w-[54%] sm:flex-col sm:justify-center sm:p-10 lg:p-14">
+              <div className="absolute inset-0 hidden bg-gradient-to-l from-bg/95 via-bg/60 to-transparent sm:block" aria-hidden="true" />
+              <div className="p-6 sm:absolute sm:inset-y-0 sm:right-0 sm:flex sm:w-[48%] sm:flex-col sm:justify-center sm:p-10 lg:p-14">
                 <p className="eyebrow text-accent">Физическая охрана</p>
                 <h2 id="guard-title" className="mt-3 text-balance font-display text-3xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-4xl lg:text-5xl">
                   Физическая охрана в Бишкеке: сотрудники на вашем объекте
@@ -637,10 +667,10 @@ export default function App() {
             </p>
 
             <div className="mt-12 grid gap-6 lg:grid-cols-3">
-              {EQUIPMENT.map(({ key, icon: Icon, name, badge, kind, text, points, img, alt }) => (
+              {EQUIPMENT.map(({ key, icon: Icon, name, badge, kind, text, points, photo, alt }) => (
                 <article key={key} className="flex flex-col rounded-3xl border border-line bg-surface p-5 shadow-card sm:p-6">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl photo-stage">
-                    <img src={img} alt={alt} loading="lazy" className="absolute inset-0 m-auto h-[84%] w-[84%] object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.45)]" />
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface2">
+                    <Photo name={photo} alt={alt} sizes="(min-width: 1024px) 40vw, (min-width: 640px) 50vw, 100vw" className="absolute inset-0 h-full w-full object-cover" />
                   </div>
                   <div className="mt-6 flex items-baseline justify-between gap-3">
                     <h3 className="font-display text-4xl font-semibold uppercase tracking-wide">{name}</h3>
@@ -705,10 +735,10 @@ export default function App() {
               </div>
 
               <figure className="overflow-hidden rounded-3xl border border-line bg-surface shadow-lift">
-                <img
-                  src={gbrImg}
-                  alt="Автомобиль группы быстрого реагирования «Бастион К» с логотипом на двери"
-                  width="1400" height="1045" loading="lazy" decoding="async"
+                <Photo
+                  name="gbr"
+                  alt="Автомобиль группы быстрого реагирования «Бастион К» с надписью и логотипом на дверях"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <figcaption className="flex items-start gap-3 border-t border-line px-5 py-4">
@@ -781,6 +811,14 @@ export default function App() {
                 <MessageCircle size={18} /> Написать в WhatsApp
               </a>
               <p className="mt-3 text-sm text-muted tabular-nums">{COMPANY.whatsapp.display}</p>
+              <div className="mt-8 hidden max-w-sm overflow-hidden rounded-3xl border border-line shadow-lift sm:block">
+                <Photo
+                  name="operator" ratio="3x4" wide={1200}
+                  alt="Оператор «Бастион К» в гарнитуре отвечает на звонок"
+                  sizes="384px"
+                  className="aspect-[4/3] w-full object-cover object-[50%_28%]"
+                />
+              </div>
             </div>
             <div className="rounded-3xl border border-line bg-surface p-6 shadow-lift sm:p-8">
               <LeadForm idPrefix="req" variant="wide" />
