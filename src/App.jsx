@@ -3,7 +3,7 @@ import {
   ShieldCheck, Phone, Menu, X, Video, Siren, Radio, Users, ShieldAlert, Landmark,
   Cpu, Antenna, MonitorSmartphone, Clock, MapPin, Mail, MessageCircle, AtSign,
   CheckCircle2, ChevronDown, ArrowRight, Image as ImageIcon, Flame, Home, Building2,
-  Store, BadgePercent, Gift, Send, Zap, Eye, Layers, Cable, Wifi,
+  Store, BadgePercent, Gift, Send, Zap, Eye, Layers, Cable, Wifi, RotateCcw,
 } from "lucide-react";
 /* Фото лежат в assets/ в двух размерах: -800 для телефонов и -1600 для больших экранов */
 const SIZES = { "4x3": [800, 597], "16x9": [960, 536], "3x4": [600, 804] };
@@ -292,6 +292,88 @@ function PhotoPlaceholder({ icon: Icon, label }) {
   );
 }
 
+
+/* Hero-видео: играет один раз и замирает на последнем кадре. Подписи идут по времени ролика */
+const HERO_STEPS = [
+  { at: 0, label: "Сработала тревога" },
+  { at: 1.6, label: "Пульт принял сигнал" },
+  { at: 4.2, label: "Группа на объекте" },
+];
+function useHeroVideo() {
+  const ref = useRef(null);
+  const [t, setT] = useState(0);
+  const [done, setDone] = useState(false);
+  const [still, setStill] = useState(false);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const stop = () => { setStill(true); setDone(true); setT(99); };
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const saver = navigator.connection && navigator.connection.saveData;
+    if (reduce || saver) { stop(); return; }
+    const small = window.matchMedia("(max-width: 767px)").matches;
+    const mp4 = v.canPlayType('video/mp4; codecs="avc1.42E01E"') !== "";
+    v.src = `assets/hero-${small ? "720" : "1080"}.${mp4 ? "mp4" : "webm"}`;
+    v.load();
+    const p = v.play();
+    if (p && p.catch) p.catch(stop);
+  }, []);
+
+  const replay = () => {
+    const v = ref.current;
+    if (!v) return;
+    setDone(false); setT(0); v.currentTime = 0; v.play();
+  };
+  return { ref, t, setT, done, setDone, still, replay };
+}
+
+function HeroMedia({ vid }) {
+  const { ref, setT, setDone, still } = vid;
+  return (
+    <div className="absolute inset-x-0 top-0 h-[340px] sm:h-[460px] lg:inset-0 lg:h-full" aria-hidden="true">
+      {still ? (
+        <Photo name="hero-end" ratio="16x9" wide={1920} eager sizes="100vw" className="h-full w-full object-cover object-[72%_50%] lg:object-center" />
+      ) : (
+        <video
+          ref={ref}
+          className="h-full w-full object-cover object-[72%_50%] lg:object-center"
+          poster="assets/hero-start-960.webp"
+          muted playsInline preload="auto"
+          onTimeUpdate={(e) => setT(e.currentTarget.currentTime)}
+          onEnded={() => { setDone(true); setT(99); }}
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/70 lg:to-transparent lg:to-[62%]" />
+      <div className="absolute inset-x-0 bottom-0 hidden h-32 bg-gradient-to-t from-bg to-transparent lg:block" />
+    </div>
+  );
+}
+
+function HeroSteps({ vid }) {
+  const { t, done, still, replay } = vid;
+  const active = HERO_STEPS.reduce((a, st, i) => (t >= st.at ? i : a), 0);
+  return (
+    <ol className="mt-9 flex max-w-xl items-start gap-2 sm:gap-3" aria-label="Как сработает охрана">
+      {HERO_STEPS.map((st, i) => (
+        <li key={st.label} className="flex-1">
+          <div className="h-0.5 overflow-hidden rounded-full bg-fg/20">
+            <div className={`h-full rounded-full ${i === 2 ? "bg-accent" : "bg-alert"} transition-[width] duration-700 ease-out`} style={{ width: i <= active ? "100%" : "0%" }} />
+          </div>
+          <p className={`mt-2.5 text-[13px] font-medium leading-tight transition-colors duration-500 ${i <= active ? "text-fg" : "text-muted/60"}`}>{st.label}</p>
+        </li>
+      ))}
+      {done && !still && (
+        <li>
+          <button type="button" onClick={replay} className="-mt-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-fg/25 text-fg transition hover:border-accent hover:text-accent" aria-label="Показать ещё раз">
+            <RotateCcw size={14} />
+          </button>
+        </li>
+      )}
+    </ol>
+  );
+}
+
 function LeadForm({ variant = "hero", idPrefix }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -463,6 +545,7 @@ function FaqItem({ q, a }) {
 /* ───────── Страница ───────── */
 export default function App() {
   const [open, setOpen] = useState(false);
+  const heroVid = useHeroVideo();
 
   return (
     <div id="top" className="min-h-screen bg-bg font-body text-fg antialiased">
@@ -516,56 +599,42 @@ export default function App() {
 
       <main>
         {/* HERO */}
-        <section className="relative overflow-hidden border-b border-line" aria-labelledby="hero-title">
-          <div className="absolute inset-0 grid-bg opacity-70" aria-hidden="true" />
-          <svg
-            className="pointer-events-none absolute -right-48 -top-40 h-[760px] w-[760px] text-accent lg:-right-24"
-            viewBox="0 0 760 760" fill="none" aria-hidden="true"
-          >
-            {[70, 140, 210, 280, 350].map((r, i) => (
-              <circle key={r} cx="380" cy="380" r={r} stroke="currentColor" strokeOpacity={0.34 - i * 0.055} strokeWidth="1.2" strokeDasharray={i % 2 ? "3 9" : "0"} />
-            ))}
-          </svg>
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" aria-hidden="true" />
-
-          <div className="wrap relative grid gap-10 py-12 sm:py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-14 lg:py-24">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-accent">
+        <section className="relative overflow-hidden" aria-labelledby="hero-title">
+          <HeroMedia vid={heroVid} />
+          <div className="wrap relative pb-12 pt-[300px] sm:pt-[400px] lg:flex lg:min-h-[660px] lg:items-center lg:py-16">
+            <div className="lg:max-w-[560px]">
+              <p className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-bg/40 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-accent backdrop-blur">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
                 Охранное агентство · с {COMPANY.since} года
               </p>
-              <h1 id="hero-title" className="mt-5 text-balance font-display text-[40px] font-bold uppercase leading-[1.04] tracking-wide sm:text-6xl lg:text-[68px]">
+              <h1 id="hero-title" className="mt-5 text-balance font-display text-[40px] font-bold uppercase leading-[1.04] tracking-wide sm:text-6xl lg:text-[64px]">
                 Надёжная охрана в <span className="text-accent">Бишкеке</span> и <span className="text-accent">Кара-Балте</span>
               </h1>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-fg/80">
                 Пультовая охрана квартир, домов и бизнеса: беспроводная система «Гранат» и проводная «Лунь». Тревогу принимает наш пульт круглосуточно, на адрес выезжает группа реагирования.
               </p>
-              <ul className="mt-7 grid max-w-xl gap-3 text-[15px] sm:grid-cols-2">
-                {["Расчёт охраны бесплатно", "Система под ваш объект", "Станция мониторинга 24/7", "Скидка 50% на первый месяц"].map((t) => (
-                  <li key={t} className="flex items-center gap-2.5">
-                    <CheckCircle2 size={18} className="shrink-0 text-accent" /> {t}
-                  </li>
-                ))}
-              </ul>
-              <dl className="mt-10 grid max-w-xl grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-7 sm:grid-cols-4">
-                {[["2010", "год основания"], ["100+", "сотрудников"], ["150+", "клиентов"], ["24/7", "приём сигналов"]].map(([v, l]) => (
-                  <div key={l}>
-                    <dt className="font-display text-3xl font-semibold text-fg tabular-nums">{v}</dt>
-                    <dd className="mt-1 text-xs uppercase tracking-wider text-muted">{l}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-
-            <div className="relative rounded-3xl border border-line bg-surface/95 p-6 shadow-card backdrop-blur sm:p-8">
-              <span className="absolute -top-3 left-6 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-accentink">
-                Скидка 50% на первый месяц
-              </span>
-              <p className="font-display text-[26px] font-semibold uppercase tracking-wide">Рассчитать стоимость охраны</p>
-              <p className="mb-5 mt-1.5 text-sm text-muted">Два поля и цена на вашем объекте. Звоним в рабочее время.</p>
-              <LeadForm idPrefix="hero" variant="hero" />
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <a href="#request" className="btn-primary">Рассчитать стоимость <ArrowRight size={18} /></a>
+                <a href={`tel:${COMPANY.phones[0].tel}`} className="btn-ghost !py-3.5 !text-base"><Phone size={16} /> {COMPANY.phones[0].display}</a>
+              </div>
+              <p className="mt-4 flex items-center gap-2 text-sm font-medium text-accent">
+                <BadgePercent size={16} /> Скидка 50% на первый месяц охраны
+              </p>
+              <HeroSteps vid={heroVid} />
             </div>
           </div>
+        </section>
+
+        {/* ЦИФРЫ */}
+        <section className="border-y border-line bg-surface" aria-label="Агентство в цифрах">
+          <dl className="wrap grid grid-cols-2 gap-x-6 gap-y-6 py-8 sm:grid-cols-4">
+            {[["2010", "год основания"], ["100+", "сотрудников"], ["150+", "клиентов"], ["24/7", "приём сигналов"]].map(([v, l]) => (
+              <div key={l}>
+                <dt className="font-display text-4xl font-semibold text-fg tabular-nums">{v}</dt>
+                <dd className="mt-1 text-xs uppercase tracking-wider text-muted">{l}</dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         {/* КЛИЕНТЫ */}
