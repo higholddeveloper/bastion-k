@@ -293,10 +293,9 @@ function PhotoPlaceholder({ icon: Icon, label }) {
 }
 
 
-/* Hero-видео: ролик крутится по кругу, в конце плавно гаснет к стартовому кадру, чтобы стык не был резким */
+/* Hero-видео: один ролик из двух клипов, стык с началом уже сделан в самом файле, поэтому он просто крутится по кругу */
 function useHeroVideo() {
   const ref = useRef(null);
-  const [fade, setFade] = useState(false);
   const [still, setStill] = useState(false);
 
   useEffect(() => {
@@ -313,15 +312,11 @@ function useHeroVideo() {
     if (p && p.catch) p.catch(() => setStill(true));
   }, []);
 
-  const onTime = (e) => {
-    const v = e.currentTarget;
-    setFade(v.duration > 0 && v.currentTime > v.duration - 0.6);
-  };
-  return { ref, fade, still, onTime };
+  return { ref, still };
 }
 
 function HeroMedia({ vid }) {
-  const { ref, fade, still, onTime } = vid;
+  const { ref, still } = vid;
   return (
     <div className="absolute inset-x-0 top-0 h-[340px] sm:h-[460px] lg:inset-0 lg:h-full" aria-hidden="true">
       {still ? (
@@ -331,13 +326,12 @@ function HeroMedia({ vid }) {
           <img src="assets/hero-start-960.webp" srcSet="assets/hero-start-960.webp 960w, assets/hero-start-1920.webp 1920w" sizes="100vw" alt="" className="absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
           <video
             ref={ref}
-            className={`absolute inset-0 h-full w-full object-cover object-[72%_50%] transition-opacity duration-500 lg:object-[50%_82%] ${fade ? "opacity-0" : "opacity-100"}`}
+            className={`absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]`}
             muted loop playsInline preload="auto"
-            onTimeUpdate={onTime}
           />
         </>
       )}
-      <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/70 lg:to-transparent lg:to-[62%]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/80 lg:to-transparent lg:to-[72%]" />
       <div className="absolute inset-x-0 bottom-0 hidden h-10 bg-gradient-to-t from-bg/80 to-transparent lg:block" />
     </div>
   );
