@@ -229,13 +229,13 @@ function LogoMark({ className = "" }) {
 
 function Logo({ className = "" }) {
   return (
-    <a href="#top" className={`flex items-center gap-2.5 ${className}`} aria-label="Бастион К, на главную">
-      <span className="logo-tile grid h-11 place-items-center rounded-xl px-1.5">
-        <LogoMark className="h-10 w-auto" />
+    <a href="#top" className={`flex shrink-0 items-center gap-2.5 max-[400px]:gap-2 ${className}`} aria-label="Бастион К, на главную">
+      <span className="logo-tile grid h-11 place-items-center rounded-xl px-1.5 max-[400px]:h-10">
+        <LogoMark className="h-10 w-auto max-[400px]:h-9" />
       </span>
-      <span className="font-display text-[22px] font-semibold uppercase leading-none tracking-wide">
+      <span className="whitespace-nowrap font-display text-[22px] font-semibold uppercase leading-none tracking-wide max-[400px]:text-[20px]">
         Бастион <span className="text-accent">К</span>
-        <span className="mt-1 block font-body text-[10px] font-medium normal-case tracking-[0.18em] text-muted">
+        <span className="mt-1 block font-body text-[10px] font-medium normal-case tracking-[0.18em] text-muted max-[400px]:text-[9px] max-[400px]:tracking-[0.1em]">
           ОХРАННОЕ АГЕНТСТВО
         </span>
       </span>
@@ -523,14 +523,23 @@ export default function App() {
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <a href={`tel:${COMPANY.phones[0].tel}`} className="hidden items-center gap-2 text-sm font-semibold hover:text-accent md:flex">
               <Phone size={16} className="text-accent" />
               <span className="tabular-nums">{COMPANY.phones[0].display}</span>
             </a>
-            <ShinyButton href="#request" size="sm" className="hidden sm:inline-flex">
-              Оставить заявку
-            </ShinyButton>
+            <div className="hidden sm:block">
+              <ShinyButton href="#request" size="sm">
+                Оставить заявку
+              </ShinyButton>
+            </div>
+            <a
+              href={`tel:${COMPANY.phones[0].tel}`}
+              className="grid h-11 w-11 place-items-center rounded-xl border border-line text-accent md:hidden"
+              aria-label={`Позвонить: ${COMPANY.phones[0].display}`}
+            >
+              <Phone size={20} />
+            </a>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -622,7 +631,7 @@ export default function App() {
               Полный комплекс безопасности для частных лиц, малого, среднего и крупного бизнеса. Отвечаем за результат на каждом этапе.
             </p>
 
-            <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
               {SERVICES.map(({ title, h3, text, featured, photo, photoAlt }) => (
                 <article
                   key={title}
@@ -689,13 +698,13 @@ export default function App() {
               Две системы для разных задач. «Гранат» работает по радиоканалу и ставится без ремонта. «Лунь» соединяет датчики проводами и даёт максимальную надёжность.
             </p>
 
-            <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
               {EQUIPMENT.map(({ key, icon: Icon, name, badge, kind, text, points, photo, alt }) => (
                 <article key={key} className="flex flex-col rounded-3xl border border-line bg-surface p-5 shadow-card sm:p-6">
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface2">
                     <Photo name={photo} alt={alt} sizes="(min-width: 1024px) 40vw, (min-width: 640px) 50vw, 100vw" className="absolute inset-0 h-full w-full object-cover" />
                   </div>
-                  <div className="mt-6 flex items-baseline justify-between gap-3">
+                  <div className="mt-6 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2">
                     <h3 className="font-display text-4xl font-semibold uppercase tracking-wide">{name}</h3>
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-accent">
                       <Icon size={13} /> {badge}
@@ -736,7 +745,7 @@ export default function App() {
             </div>
 
             {/* Как это работает */}
-            <div className="mt-16 grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+            <div className="mt-16 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-start">
               <div>
                 <h2 className="max-w-xl text-balance font-display text-3xl font-semibold uppercase leading-tight tracking-wide sm:text-4xl">
                   Как тревога доходит от датчика до группы реагирования
@@ -783,7 +792,7 @@ export default function App() {
             <h2 id="adv-title" className="mt-3 max-w-3xl text-balance font-display text-4xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-5xl">
               Почему бизнес и семьи выбирают «Бастион К»
             </h2>
-            <Reveal className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            <Reveal className="mt-12 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
               {ADVANTAGES.map(({ icon: Icon, anim, title, text }, i) => (
                 <div key={title} data-anim={anim} className="ico-item flex gap-4">
                   <span style={{ "--i": i }} className="ico-tile grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-accent/10 text-accent ring-1 ring-accent/25">
@@ -797,7 +806,7 @@ export default function App() {
               ))}
             </Reveal>
 
-            <div className="mt-16 grid gap-5 md:grid-cols-2">
+            <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-2">
               <article className="relative overflow-hidden rounded-3xl bg-accent p-8 text-accentink shadow-lift">
                 <BadgePercent size={34} />
                 <p className="mt-4 font-display text-6xl font-bold leading-none">−50%</p>
@@ -822,7 +831,7 @@ export default function App() {
         <section id="request" className="scroll-mt-20 relative overflow-hidden border-y border-line" aria-labelledby="request-title">
           <div className="absolute inset-0 grid-bg opacity-50" aria-hidden="true" />
           <div className="wrap relative py-16 sm:py-24">
-            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
               <div>
                 <p className="eyebrow text-accent">Заявка на охрану</p>
                 <h2 id="request-title" className="mt-3 text-balance font-display text-4xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-5xl">
@@ -841,7 +850,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+            <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
               <div className="relative hidden aspect-[16/9] overflow-hidden rounded-3xl border border-line shadow-lift sm:block lg:aspect-auto lg:min-h-[420px]">
                 <Photo
                   name="operator" ratio="3x4" wide={1200}
@@ -859,7 +868,7 @@ export default function App() {
 
         {/* FAQ */}
         <section id="faq" className="scroll-mt-20 bg-paper text-ink" aria-labelledby="faq-title">
-          <div className="wrap grid gap-10 py-16 sm:py-24 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="wrap grid grid-cols-1 gap-10 py-16 sm:py-24 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <p className="eyebrow text-papermuted">Вопросы</p>
               <h2 id="faq-title" className="mt-3 text-balance font-display text-4xl font-semibold uppercase leading-[1.08] tracking-wide sm:text-5xl">
@@ -876,7 +885,7 @@ export default function App() {
       {/* FOOTER */}
       <footer id="contacts" className="scroll-mt-20 bg-bg" aria-labelledby="contacts-title">
         <div className="wrap py-16">
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.4fr]">
             <div>
               <Logo />
               <h2 id="contacts-title" className="mt-8 font-display text-3xl font-semibold uppercase tracking-wide">
@@ -886,7 +895,7 @@ export default function App() {
                 Работаем по Бишкеку и Чуйской области. Станция мониторинга принимает сигналы круглосуточно.
               </p>
             </div>
-            <address className="grid gap-6 not-italic sm:grid-cols-2">
+            <address className="grid grid-cols-1 gap-6 not-italic sm:grid-cols-2">
               <div className="flex gap-3">
                 <MapPin className="mt-1 shrink-0 text-accent" size={20} />
                 <div><p className="label">Адрес</p><p className="mt-1">{COMPANY.address}</p></div>
