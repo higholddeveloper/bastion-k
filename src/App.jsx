@@ -304,9 +304,7 @@ function useHeroVideo() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const saver = navigator.connection && navigator.connection.saveData;
     if (reduce || saver) { setStill(true); return; }
-    const small = window.matchMedia("(max-width: 767px)").matches;
-    const mp4 = v.canPlayType('video/mp4; codecs="avc1.42E01E"') !== "";
-    v.src = `assets/hero-${small ? "sd" : "hd"}.${mp4 ? "mp4" : "webm"}`;
+    v.src = "assets/hero.mp4";
     v.load();
     const p = v.play();
     if (p && p.catch) p.catch(() => setStill(true));
