@@ -306,7 +306,7 @@ function useHeroVideo() {
     if (reduce || saver) { setStill(true); return; }
     const small = window.matchMedia("(max-width: 767px)").matches;
     const mp4 = v.canPlayType('video/mp4; codecs="avc1.42E01E"') !== "";
-    v.src = `assets/hero-${small ? "720" : "1080"}.${mp4 ? "mp4" : "webm"}`;
+    v.src = `assets/hero-${small ? "sd" : "hd"}.${mp4 ? "mp4" : "webm"}`;
     v.load();
     const p = v.play();
     if (p && p.catch) p.catch(() => setStill(true));
@@ -320,10 +320,10 @@ function HeroMedia({ vid }) {
   return (
     <div className="absolute inset-x-0 top-0 h-[340px] sm:h-[460px] lg:inset-0 lg:h-full" aria-hidden="true">
       {still ? (
-        <Photo name="hero-end" ratio="16x9" wide={1920} eager sizes="100vw" className="h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
+        <Photo name="hero-end" ratio="16x9" wide={1280} eager sizes="100vw" className="h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
       ) : (
         <>
-          <img src="assets/hero-start-960.webp" srcSet="assets/hero-start-960.webp 960w, assets/hero-start-1920.webp 1920w" sizes="100vw" alt="" className="absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
+          <img src="assets/hero-start-960.webp" srcSet="assets/hero-start-960.webp 960w, assets/hero-start-1280.webp 1280w" sizes="100vw" alt="" className="absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]" />
           <video
             ref={ref}
             className={`absolute inset-0 h-full w-full object-cover object-[72%_50%] lg:object-[50%_82%]`}
