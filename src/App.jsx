@@ -331,7 +331,7 @@ function HeroMedia({ vid }) {
           />
         </>
       )}
-      <div className="absolute inset-0 bg-gradient-to-b from-bg/55 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/80 lg:to-transparent lg:to-[72%]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg/30 via-transparent to-bg lg:bg-gradient-to-r lg:from-bg lg:via-bg/70 lg:to-transparent lg:to-[68%]" />
       <div className="absolute inset-x-0 bottom-0 hidden h-10 bg-gradient-to-t from-bg/80 to-transparent lg:block" />
     </div>
   );
